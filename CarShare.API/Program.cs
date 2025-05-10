@@ -119,6 +119,8 @@ namespace CarShare
 
 
             app.MapControllers();
+            app.UseStaticFiles(); // ده مهم علشان الصور تتشاف من الفرونت
+
 
             app.Run();
         }

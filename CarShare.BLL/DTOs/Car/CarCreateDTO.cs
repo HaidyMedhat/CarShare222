@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarShare.BLL.DTOs.Car
 {
@@ -32,5 +33,8 @@ namespace CarShare.BLL.DTOs.Car
 
         [Required]
         public string LicensePlate { get; set; }
+
+        // ✅ الجديد
+        public List<IFormFile>? Images { get; set; }
     }
 }

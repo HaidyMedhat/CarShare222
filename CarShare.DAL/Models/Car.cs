@@ -1,6 +1,6 @@
 ﻿using CarShare.DAL.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; // ✅ لازم عشان [ForeignKey]
+using System.ComponentModel.DataAnnotations.Schema; 
 
 namespace CarShare.DAL.Models
 {

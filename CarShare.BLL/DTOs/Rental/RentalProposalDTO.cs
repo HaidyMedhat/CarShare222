@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarShare.BLL.DTOs.Rental
 {
@@ -14,6 +15,6 @@ namespace CarShare.BLL.DTOs.Rental
         public DateTime EndDate { get; set; }
 
         [Required]
-        public string LicenseVerificationUrl { get; set; }
+        public IFormFile LicenseVerificationUrl { get; set; }
     }
 }

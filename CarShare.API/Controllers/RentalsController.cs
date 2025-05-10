@@ -20,7 +20,7 @@ namespace CarShare.API.Controllers
 
         [Authorize(Roles = "Renter")]
         [HttpPost("proposals")]
-        public async Task<IActionResult> CreateProposal([FromBody] RentalProposalDTO proposalDTO)
+        public async Task<IActionResult> CreateProposal([FromForm] RentalProposalDTO proposalDTO)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
@@ -36,24 +36,19 @@ namespace CarShare.API.Controllers
         [HttpPatch("proposals/{id}/approve")]
         public async Task<IActionResult> ApproveProposal(Guid id)
         {
-            var subClaim = User.FindFirst("sub")?.Value;
+            //var subClaim = User.FindFirst("sub")?.Value;
 
-            if (string.IsNullOrWhiteSpace(subClaim) || !Guid.TryParse(subClaim, out Guid ownerId))
+            //if (string.IsNullOrWhiteSpace(subClaim) || !Guid.TryParse(subClaim, out Guid ownerId))
+            //    return Unauthorized("Invalid or missing user ID in token.");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid ownerId))
                 return Unauthorized("Invalid or missing user ID in token.");
+
 
             await _rentalService.ApproveProposalAsync(id, ownerId);
             return NoContent();
         }
-
-        //[Authorize(Roles = "CarOwner")]
-        //[HttpPatch("proposals/{id}/approve")]
-        //public async Task<IActionResult> ApproveProposal(Guid id)
-        //{
-        //    // Get ownerId from JWT in real implementation
-        //    var ownerId = Guid.Parse(User.FindFirst("sub")?.Value);
-        //    await _rentalService.ApproveProposalAsync(id, ownerId);
-        //    return NoContent();
-        //}
 
         [HttpGet("proposals/{id}")]
         public async Task<IActionResult> GetProposal(Guid id)

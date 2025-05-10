@@ -31,6 +31,32 @@ namespace CarShare.BLL.Services
             car.RentalStatus = RentalStatus.Available; // Ensure it's set to available by default
 
             await _unitOfWork.Cars.AddAsync(car);
+            // ✅ لو فيه صور، خزنها
+            if (carDTO.Images != null && carDTO.Images.Count > 0)
+            {
+                foreach (var image in carDTO.Images)
+                {
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                    var filePath = Path.Combine("wwwroot/images/cars", fileName);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)); // Just in case
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    var carImage = new CarImage
+                    {
+                        CarId = car.CarId,
+                        ImageUrl = $"/images/cars/{fileName}",
+                        IsMain = false
+                    };
+
+                    await _unitOfWork.Context.CarImages.AddAsync(carImage);
+                }
+            }
+
             await _unitOfWork.CommitAsync();
 
             return _mapper.Map<CarResponseDTO>(car);

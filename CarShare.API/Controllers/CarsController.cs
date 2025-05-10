@@ -34,7 +34,7 @@ namespace CarShare.API.Controllers
 
         [Authorize(Roles = "CarOwner")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CarCreateDTO carDTO)
+        public async Task<IActionResult> Create([FromForm] CarCreateDTO carDTO)
         {
             // Optional: Debugging claims
             var allClaims = User.Claims.Select(c => $"{c.Type}: {c.Value}");
