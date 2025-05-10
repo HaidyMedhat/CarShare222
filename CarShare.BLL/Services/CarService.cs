@@ -87,6 +87,28 @@ namespace CarShare.BLL.Services
             await _unitOfWork.CommitAsync();
         }
 
+        // view pending cars
+        public async Task<IEnumerable<CarResponseDTO>> GetPendingCarsAsync()
+        {
+            var pendingCars = await _unitOfWork.Context.Cars
+                .Include(c => c.Owner)
+                .Where(c => !c.IsApproved)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<CarResponseDTO>>(pendingCars);
+        }
+
+        // reject car posts
+        public async Task RejectCarAsync(Guid carId)
+        {
+            var car = await _unitOfWork.Cars.GetByIdAsync(carId);
+            if (car == null)
+                throw new Exception("Car not found");
+
+            _unitOfWork.Cars.Remove(car);
+            await _unitOfWork.CommitAsync();
+        }
+
 
 
 

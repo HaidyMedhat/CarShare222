@@ -36,8 +36,9 @@ namespace CarShare.BLL.Mappings
                  .ForMember(dest => dest.Year,
                    opt => opt.MapFrom(src => src.Year))
                  .ForMember(dest => dest.OwnerName, 
-                  opt => opt.MapFrom(src => src.Owner.FirstName + " " + src.Owner.LastName));
-
+                  opt => opt.MapFrom(src => src.Owner.FirstName + " " + src.Owner.LastName))
+                 .ForMember(dest => dest.IsApproved, 
+                    opt => opt.MapFrom(src => src.IsApproved));
 
 
             // Rental Mappings
