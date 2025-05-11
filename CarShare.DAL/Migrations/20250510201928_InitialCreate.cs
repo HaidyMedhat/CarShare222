@@ -250,6 +250,11 @@ namespace CarShare.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "AccountStatus", "CreatedAt", "Email", "FirstName", "IsActive", "IsVerified", "LastLogin", "LastName", "PasswordHash", "PasswordSalt", "PhoneNumber", "ProfilePictureUrl", "Role", "Username" },
+                values: new object[] { new Guid("cc28fd57-2104-4ec6-8c8e-c3f6a9ae42f4"), 1, new DateTime(2025, 5, 10, 20, 19, 27, 347, DateTimeKind.Utc).AddTicks(9294), "admin@carshare.com", "Admin", true, true, null, "System", new byte[] { 206, 44, 117, 152, 224, 122, 43, 177, 23, 36, 118, 21, 207, 247, 212, 67, 216, 253, 101, 125, 137, 59, 175, 200, 39, 124, 233, 50, 246, 246, 159, 68, 146, 234, 250, 204, 100, 55, 157, 219, 101, 115, 151, 154, 74, 47, 67, 109, 153, 137, 241, 232, 163, 62, 149, 103, 120, 85, 181, 194, 170, 174, 189, 8 }, new byte[] { 247, 145, 197, 1, 84, 120, 26, 148, 147, 143, 148, 127, 2, 251, 237, 52, 2, 60, 167, 8, 57, 178, 111, 195, 135, 91, 111, 183, 163, 150, 205, 210, 69, 107, 22, 203, 60, 85, 73, 109, 54, 70, 152, 40, 85, 161, 87, 33, 154, 127, 128, 87, 47, 8, 162, 53, 158, 142, 120, 251, 16, 6, 17, 10, 9, 28, 110, 239, 81, 214, 221, 155, 113, 156, 120, 77, 160, 69, 168, 167, 203, 206, 184, 172, 88, 141, 10, 132, 43, 187, 23, 249, 80, 181, 67, 35, 181, 47, 96, 40, 211, 26, 111, 2, 127, 22, 208, 131, 148, 120, 125, 94, 34, 101, 45, 80, 98, 238, 127, 254, 62, 198, 99, 202, 4, 55, 161, 60 }, "010000000000", null, "Admin", "admin" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CarFeatureMappings_FeatureId",
                 table: "CarFeatureMappings",
