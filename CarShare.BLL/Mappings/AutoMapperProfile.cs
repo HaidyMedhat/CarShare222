@@ -35,9 +35,11 @@ namespace CarShare.BLL.Mappings
                      opt => opt.MapFrom(src => src.RentalStatus.ToString()))
                  .ForMember(dest => dest.Year,
                    opt => opt.MapFrom(src => src.Year))
-                 .ForMember(dest => dest.OwnerName, 
-                  opt => opt.MapFrom(src => src.Owner.FirstName + " " + src.Owner.LastName));
-
+                 .ForMember(dest => dest.OwnerName,
+                  opt => opt.MapFrom(src => src.Owner.FirstName + " " + src.Owner.LastName))
+                 .ForMember(dest => dest.IsApproved,
+                    opt => opt.MapFrom(src => src.IsApproved));
+   
 
 
             // Rental Mappings
@@ -48,9 +50,13 @@ namespace CarShare.BLL.Mappings
                 .ForMember(dest => dest.CarTitle,
                     opt => opt.MapFrom(src => src.Car.Title))
                 .ForMember(dest => dest.RenterName,
-                    opt => opt.MapFrom(src => $"{src.Renter.FirstName} {src.Renter.LastName}"));
-
-
+                    opt => opt.MapFrom(src => $"{src.Renter.FirstName} {src.Renter.LastName}"))
+                 .ForMember(dest => dest.Status,
+                    opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.StartDate,
+                    opt => opt.MapFrom(src => src.StartDate))
+                 .ForMember(dest => dest.EndDate,
+                    opt => opt.MapFrom(src => src.EndDate));
 
 
 

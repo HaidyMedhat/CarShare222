@@ -55,5 +55,22 @@ namespace CarShare.API.Controllers
             await _carService.ApproveCarAsync(id);
             return NoContent();
         }
+
+        // ✅ Endpoint جديد عشان يجيب العربيات اللي لسه مستنيا الموافقة
+        [Authorize(Roles = "Admin")]
+        [HttpGet("pending")]
+        public async Task<IActionResult> GetPendingCars()
+        {
+            var result = await _carService.GetPendingCarsAsync();
+            return HandleResult(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("{id}/reject")]
+        public async Task<IActionResult> RejectCar(Guid id)
+        {
+            await _carService.RejectCarAsync(id);
+            return NoContent();
+        }
     }
 }

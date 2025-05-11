@@ -66,17 +66,22 @@ namespace CarShare.BLL.Services
 
         public async Task ApproveProposalAsync(Guid proposalId, Guid ownerId)
         {
-            var proposal = await _unitOfWork.RentalProposals.GetByIdAsync(proposalId);
-            var car = await _unitOfWork.Cars.GetByIdAsync(proposal.CarId);
+            var proposal = await _unitOfWork.Context.RentalProposals
+                .Include(p => p.Car)
+                .FirstOrDefaultAsync(p => p.ProposalId == proposalId);
 
-            if (car.OwnerId != ownerId)
-                throw new Exception("Only car owner can approve proposals");
+            if (proposal == null || proposal.Car.OwnerId != ownerId)
+                throw new Exception("Proposal not found or unauthorized");
 
+            // Update Proposal Status
             proposal.Status = ProposalStatus.Accepted;
-            car.RentalStatus = RentalStatus.Rented;
+
+            // Update Car Rental Status
+            proposal.Car.RentalStatus = RentalStatus.Rented;
 
             await _unitOfWork.CommitAsync();
         }
+
         public async Task<RentalResponseDTO?> GetProposalByIdAsync(Guid proposalId)
         {
             var proposal = await _unitOfWork.RentalProposals
@@ -88,7 +93,30 @@ namespace CarShare.BLL.Services
                 throw new Exception("Proposal not found");
 
             return _mapper.Map<RentalResponseDTO>(proposal);
+
         }
+
+        public async Task<IEnumerable<RentalResponseDTO>> GetProposalsForOwnerAsync(Guid ownerId)
+        {
+            var proposals = await _unitOfWork.Context.RentalProposals
+                .Include(p => p.Car)
+                .Include(p => p.Renter)
+                .Where(p => p.Car.OwnerId == ownerId)
+                .ToListAsync();
+
+            return proposals.Select(p => new RentalResponseDTO
+            {
+                ProposalId = p.ProposalId,
+                CarTitle = p.Car.Title,
+                RenterName = p.Renter.FirstName + p.Renter.LastName ,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate,
+                Status = p.Status.ToString()
+            });
+        }
+
+
+
 
     }
 }

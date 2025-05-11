@@ -1,4 +1,6 @@
-﻿namespace CarShare.BLL.DTOs.Car
+﻿using CarShare.DAL.Enums;
+
+namespace CarShare.BLL.DTOs.Car
 {
     public class CarResponseDTO
     {
@@ -12,10 +14,14 @@
         public string Transmission { get; set; }
         public string RentalStatus { get; set; }
         public List<string> ImageUrls { get; set; } = new();
+
+        public string Description { get; set; }
+        public CarType Type { get; set; }
+
+        public string LicensePlate { get; set; }
         public string? OwnerName { get; set; }
 
-
-
+        public bool IsApproved { get; set; }
 
     }
     /*
