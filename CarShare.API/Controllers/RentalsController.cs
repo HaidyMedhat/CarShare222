@@ -59,5 +59,15 @@ namespace CarShare.API.Controllers
 
             return Ok(proposal);
         }
+
+        [Authorize(Roles = "CarOwner")]
+       [HttpGet("proposals/owner")]
+       public async Task<IActionResult> GetProposalsForOwner()
+       {
+          var ownerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+          var proposals = await _rentalService.GetProposalsForOwnerAsync(ownerId);
+          return Ok(proposals);
+     }
+
     }
 }
