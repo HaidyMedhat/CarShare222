@@ -9,7 +9,8 @@ namespace CarShare.BLL.Interfaces
         Task<IEnumerable<CarResponseDTO>> GetAllAvailableAsync();
         Task<CarResponseDTO> GetByIdAsync(Guid carId);
         Task ApproveCarAsync(Guid carId);
-       // Task<IEnumerable<Car>> GetAllAvailableWithOwnerAsync();
+        //Task<Result<CarResponseDTO>> UpdateAsync(CarUpdateDTO carDTO, Guid ownerId);
+
 
     }
 }
