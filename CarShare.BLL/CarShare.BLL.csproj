@@ -7,6 +7,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="DTOs\NewFolder\**" />
+	  <EmbeddedResource Remove="DTOs\NewFolder\**" />
+	  <None Remove="DTOs\NewFolder\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\CarShare.DAL\CarShare.DAL.csproj" />
 	</ItemGroup>
 
@@ -21,10 +27,6 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="DTOs\NewFolder\" />
 	</ItemGroup>
 
 </Project>

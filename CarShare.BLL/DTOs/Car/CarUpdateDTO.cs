@@ -1,7 +1,5 @@
 ﻿using CarShare.DAL.Enums;
-using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CarShare.BLL.DTOs.Car
@@ -11,33 +9,16 @@ namespace CarShare.BLL.DTOs.Car
         [Required]
         public Guid CarId { get; set; }
 
-        [Required, MaxLength(100)]
-        public string Title { get; set; }
-
-        public string? Description { get; set; }
-
-        [Required]
-        public CarType CarType { get; set; }
-
-        [Required, MaxLength(50)]
-        public string Brand { get; set; }
-
-        [Required, MaxLength(50)]
-        public string Model { get; set; }
-
-        [Required]
-        public int Year { get; set; }
-
-        [Required]
-        public TransmissionType Transmission { get; set; }
-
-        [Required, MaxLength(100)]
-        public string Location { get; set; }
-
-        [Required, MaxLength(20)]
-        public string LicensePlate { get; set; }
-
-        [Required]
-        public decimal PricePerDay { get; set; }
+        // Make all fields nullable and remove defaults
+        public string? Title { get; set; } = null; // Explicit null default
+        public string? Description { get; set; } = null;
+        public CarType? CarType { get; set; } = null;
+        public string? Brand { get; set; } = null;
+        public string? Model { get; set; } = null;
+        public int? Year { get; set; } = null;
+        public TransmissionType? Transmission { get; set; } = null;
+        public string? Location { get; set; } = null;
+        public string? LicensePlate { get; set; } = null;
+        public decimal? PricePerDay { get; set; } = null;
     }
 }

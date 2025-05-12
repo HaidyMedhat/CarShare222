@@ -72,5 +72,41 @@ namespace CarShare.API.Controllers
             await _carService.RejectCarAsync(id);
             return NoContent();
         }
+        // Get my cars (owner only)
+        [Authorize(Roles = "CarOwner")]
+        [HttpGet("my-cars")]
+        public async Task<IActionResult> GetMyCars()
+        {
+            var ownerId = GetCurrentUserId();
+            var result = await _carService.GetByOwnerIdAsync(ownerId);
+            return HandleResult(result);
+        }
+
+        // Update car (owner only)
+        [Authorize(Roles = "CarOwner")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] CarUpdateDTO carDTO)
+        {
+            var ownerId = GetCurrentUserId();
+            carDTO.CarId = id; // Ensure ID matches route
+            var result = await _carService.UpdateAsync(id, carDTO, ownerId);
+            return HandleResult(result);
+        }
+
+        // Delete car (owner only) - with rental check
+        [Authorize(Roles = "CarOwner")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var ownerId = GetCurrentUserId();
+            var result = await _carService.DeleteAsync(id, ownerId);
+            return HandleResult(result);
+        }
+        private Guid GetCurrentUserId()
+        {
+            return Guid.Parse(
+                User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value
+            );
+        }
     }
 }
