@@ -9,6 +9,8 @@ namespace CarShare.BLL.Interfaces
         Task RejectProposalAsync(Guid proposalId, Guid ownerId);
         Task<RentalResponseDTO?> GetProposalByIdAsync(Guid proposalId);
         Task<IEnumerable<RentalResponseDTO>> GetProposalsForOwnerAsync(Guid ownerId);
+        Task<ReviewResponseDTO> AddCarReviewAsync(ReviewCreateDTO reviewDTO, Guid renterId);
+        Task<IEnumerable<ReviewResponseDTO>> GetReviewsForCarAsync(Guid carId);
 
     }
 

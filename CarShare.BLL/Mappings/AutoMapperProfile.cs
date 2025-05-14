@@ -57,6 +57,9 @@ namespace CarShare.BLL.Mappings
                     opt => opt.MapFrom(src => src.StartDate))
                  .ForMember(dest => dest.EndDate,
                     opt => opt.MapFrom(src => src.EndDate));
+            CreateMap<Review, ReviewResponseDTO>()
+                .ForMember(dest => dest.CarTitle, opt => opt.MapFrom(src => src.Car.Title))
+                .ForMember(dest => dest.RenterName, opt => opt.MapFrom(src => src.Renter.FirstName + " " + src.Renter.LastName));
 
 
 

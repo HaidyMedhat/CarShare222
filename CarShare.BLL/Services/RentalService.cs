@@ -64,6 +64,23 @@ namespace CarShare.BLL.Services
             return _mapper.Map<RentalResponseDTO>(proposal);
         }
 
+        //public async Task ApproveProposalAsync(Guid proposalId, Guid ownerId)
+        //{
+        //    var proposal = await _unitOfWork.Context.RentalProposals
+        //        .Include(p => p.Car)
+        //        .FirstOrDefaultAsync(p => p.ProposalId == proposalId);
+
+        //    if (proposal == null || proposal.Car.OwnerId != ownerId)
+        //        throw new Exception("Proposal not found or unauthorized");
+
+        //    // Update Proposal Status
+        //    proposal.Status = ProposalStatus.Accepted;
+
+        //    // Update Car Rental Status
+        //    proposal.Car.RentalStatus = RentalStatus.Rented;
+
+        //    await _unitOfWork.CommitAsync();
+        //}
         public async Task ApproveProposalAsync(Guid proposalId, Guid ownerId)
         {
             var proposal = await _unitOfWork.Context.RentalProposals
@@ -78,6 +95,21 @@ namespace CarShare.BLL.Services
 
             // Update Car Rental Status
             proposal.Car.RentalStatus = RentalStatus.Rented;
+
+            // 🔽 Create Rental record (if it doesn't already exist)
+            var existingRental = await _unitOfWork.Context.Rentals
+                .FirstOrDefaultAsync(r => r.ProposalId == proposalId);
+
+            if (existingRental == null)
+            {
+                var rental = new Rental
+                {
+                    ProposalId = proposal.ProposalId,
+                    Status = RentalState.Completed // or .Pending if you prefer
+                };
+
+                await _unitOfWork.Rentals.AddAsync(rental);
+            }
 
             await _unitOfWork.CommitAsync();
         }
@@ -132,9 +164,86 @@ namespace CarShare.BLL.Services
                 Status = p.Status.ToString()
             });
         }
+        public async Task<ReviewResponseDTO> AddCarReviewAsync(ReviewCreateDTO reviewDTO, Guid renterId)
+        {
+            // 1. Verify rental with more flexible time check
+            var rental = await _unitOfWork.Context.Rentals
+                        .Include(r => r.Proposal)
+                           .ThenInclude(p => p.Car)
+                        .Include(r => r.Proposal.Renter)
+                        .FirstOrDefaultAsync(r =>
+                            r.RentalId == reviewDTO.RentalId &&
+                            r.Proposal.CarId == reviewDTO.CarId &&
+                            r.Proposal.RenterId == renterId &&
+                            r.Proposal.Status == ProposalStatus.Accepted);
 
 
+            if (rental == null)
+                throw new Exception("Rental not found or invalid");
 
+            // 2. Allow reviews if rental was EVER active (remove time check)
+            // if (rental.EndDate < DateTime.UtcNow) // Removed this check
+
+            // 3. Check for existing review
+            if (await _unitOfWork.Context.Reviews
+                .AnyAsync(r => r.RentalId == reviewDTO.RentalId))
+            {
+                throw new Exception("You've already reviewed this rental");
+            }
+
+            // 4. Create and save review
+            var review = new Review
+            {
+                CarId = reviewDTO.CarId,
+                RenterId = renterId,
+                RentalId = reviewDTO.RentalId,
+                Rating = reviewDTO.Rating,
+                Comment = reviewDTO.Comment,
+                ReviewDate = DateTime.UtcNow
+            };
+
+            await _unitOfWork.Reviews.AddAsync(review);
+            await _unitOfWork.CommitAsync();
+
+            return _mapper.Map<ReviewResponseDTO>(review);
+        }
+
+        private async Task UpdateCarRating(Guid carId)
+        {
+            // 1. Get the car with tracking to update it
+            var car = await _unitOfWork.Context.Cars
+                .FirstOrDefaultAsync(c => c.CarId == carId);
+
+            if (car == null) return;
+
+            // 2. Calculate new average rating
+            car.AverageRating = await _unitOfWork.Context.Reviews
+                .Where(r => r.CarId == carId)
+                .AverageAsync(r => (decimal?)r.Rating) ?? 0; // Handle no reviews case
+
+            // 3. Explicitly mark as modified (optional but clear)
+            _unitOfWork.Context.Entry(car).Property(x => x.AverageRating).IsModified = true;
+
+            // 4. Save changes
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<IEnumerable<ReviewResponseDTO>> GetReviewsForCarAsync(Guid carId)
+        {
+            return await _unitOfWork.Context.Reviews
+                .Where(r => r.CarId == carId)
+                .Include(r => r.Renter)
+                .OrderByDescending(r => r.ReviewDate)
+                .Select(r => new ReviewResponseDTO
+                {
+                    ReviewId = r.ReviewId,
+                    RenterName = $"{r.Renter.FirstName} {r.Renter.LastName}",
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    ReviewDate = r.ReviewDate,
+                })
+                .ToListAsync();
+        }
 
     }
 }

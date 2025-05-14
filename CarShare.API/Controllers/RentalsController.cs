@@ -2,6 +2,7 @@
 using CarShare.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 
 namespace CarShare.API.Controllers
@@ -85,7 +86,41 @@ namespace CarShare.API.Controllers
      }
 
 
+        [Authorize(Roles = "Renter")]
+        [HttpPost("reviews")]
+        public async Task<IActionResult> AddReview([FromBody] ReviewCreateDTO reviewDTO)
+        {
+            // 1. Get user ID from claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim))
+                return Unauthorized("User ID not found in token");
 
+            if (!Guid.TryParse(userIdClaim, out Guid renterId))
+                return Unauthorized("Invalid user ID format");
 
+            // 2. Process review
+            try
+            {
+                var result = await _rentalService.AddCarReviewAsync(reviewDTO, renterId);
+                return CreatedAtAction(
+                    actionName: nameof(GetCarReviews),
+                    routeValues: new { carId = reviewDTO.CarId },
+                    value: result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(ex.InnerException?.Message ?? ex.Message);
+            }
+
+        }
+
+        [HttpGet("cars/{carId}/reviews")]
+        public async Task<IActionResult> GetCarReviews(Guid carId)
+        {
+            var reviews = await _rentalService.GetReviewsForCarAsync(carId);
+            return Ok(reviews);
+        }
+        
     }
 }
