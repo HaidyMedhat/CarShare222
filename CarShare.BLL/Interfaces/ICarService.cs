@@ -12,6 +12,8 @@ namespace CarShare.BLL.Interfaces
         Task ApproveCarAsync(Guid carId);
         Task RejectCarAsync(Guid carId);
 
+
+
         // New methods for Car Owner CRUD
         Task<IEnumerable<CarResponseDTO>> GetByOwnerIdAsync(Guid ownerId);
         Task<CarResponseDTO> UpdateAsync(Guid carId, CarUpdateDTO carDTO, Guid ownerId);

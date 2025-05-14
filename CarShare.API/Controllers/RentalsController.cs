@@ -60,6 +60,21 @@ namespace CarShare.API.Controllers
             return Ok(proposal);
         }
 
+
+        [Authorize(Roles = "CarOwner")]
+        [HttpPatch("proposals/{id}/reject")]
+        public async Task<IActionResult> RejectProposal(Guid id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid ownerId))
+                return Unauthorized("Invalid or missing user ID in token.");
+
+            await _rentalService.RejectProposalAsync(id, ownerId);
+            return NoContent();
+        }
+
+
         [Authorize(Roles = "CarOwner")]
        [HttpGet("proposals/owner")]
        public async Task<IActionResult> GetProposalsForOwner()
@@ -68,6 +83,9 @@ namespace CarShare.API.Controllers
           var proposals = await _rentalService.GetProposalsForOwnerAsync(ownerId);
           return Ok(proposals);
      }
+
+
+
 
     }
 }

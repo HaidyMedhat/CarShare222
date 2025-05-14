@@ -82,6 +82,24 @@ namespace CarShare.BLL.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task RejectProposalAsync(Guid proposalId, Guid ownerId)
+        {
+            // get from db
+            var proposal = await _unitOfWork.Context.RentalProposals
+                .Include(p => p.Car)
+                .FirstOrDefaultAsync(p => p.ProposalId == proposalId);
+
+            if (proposal == null || proposal.Car.OwnerId != ownerId)
+                throw new Exception("Proposal not found or unauthorized");
+
+            // update status to Rejected
+            proposal.Status = ProposalStatus.Rejected;
+
+            await _unitOfWork.CommitAsync();
+        }
+
+
+
         public async Task<RentalResponseDTO?> GetProposalByIdAsync(Guid proposalId)
         {
             var proposal = await _unitOfWork.RentalProposals
@@ -95,7 +113,6 @@ namespace CarShare.BLL.Services
             return _mapper.Map<RentalResponseDTO>(proposal);
 
         }
-
         public async Task<IEnumerable<RentalResponseDTO>> GetProposalsForOwnerAsync(Guid ownerId)
         {
             var proposals = await _unitOfWork.Context.RentalProposals
@@ -107,6 +124,7 @@ namespace CarShare.BLL.Services
             return proposals.Select(p => new RentalResponseDTO
             {
                 ProposalId = p.ProposalId,
+                CarId = p.Car.CarId,
                 CarTitle = p.Car.Title,
                 RenterName = p.Renter.FirstName + p.Renter.LastName ,
                 StartDate = p.StartDate,

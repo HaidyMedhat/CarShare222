@@ -2,6 +2,7 @@
 using CarShare.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarShare.API.Controllers
 {
@@ -93,6 +94,7 @@ namespace CarShare.API.Controllers
             return HandleResult(result);
         }
 
+
         // Delete car (owner only) - with rental check
         [Authorize(Roles = "CarOwner")]
         [HttpDelete("{id}")]
@@ -108,5 +110,7 @@ namespace CarShare.API.Controllers
                 User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value
             );
         }
+
+
     }
 }
