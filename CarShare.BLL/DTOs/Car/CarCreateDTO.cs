@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CarShare.DAL.Enums;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace CarShare.BLL.DTOs.Car
@@ -11,7 +12,7 @@ namespace CarShare.BLL.DTOs.Car
         public string? Description { get; set; }
 
         [Required]
-        public string CarType { get; set; }
+        public CarType Type { get; set; }
 
         [Required]
         public string Brand { get; set; }
@@ -23,7 +24,7 @@ namespace CarShare.BLL.DTOs.Car
         public int Year { get; set; }
 
         [Required]
-        public string Transmission { get; set; }
+        public TransmissionType Transmission { get; set; }
 
         [Required]
         public decimal PricePerDay { get; set; }
